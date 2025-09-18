@@ -1,6 +1,4 @@
-using JetBrains.Annotations;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 public class PlayerController : MonoBehaviour
 {
@@ -8,6 +6,11 @@ public class PlayerController : MonoBehaviour
     public float walkSpeed = 3;
     public float runSpeed = 6;
     public float rotationSpeed = 10;
+
+    [Header("점프 설정")]
+    public float jumpHight = 2;
+    public float gravity = -9.81f;
+    public float landingDuration = 0.3f;
 
     [Header("공격 설정")]
     public float attackDuration = 0.8f; // 공격 지속시간
@@ -23,6 +26,13 @@ public class PlayerController : MonoBehaviour
     // 현재 상태값
     private float currentSpeed;
     private bool isAttacking;
+    private bool isLanding = false;
+    private float landingTimer;
+
+    private Vector3 velocity;
+    private bool isGrounded;
+    private bool wasGrounded;
+    private float attackTimer;
 
     void Start()
     {
@@ -33,12 +43,25 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        CheckGrounded();
+        HendleLanding();
         HandleMovement();
         UpdateAnimator();
+        HendleAttack();
+        HandleJump();
+
+        
     }
 
     void HandleMovement()
     {
+        // 공격 or 착지 중 움직임 못 함
+        if ((isAttacking && !canMoveWhileAttacking) || isLanding)
+        {
+            currentSpeed = 0;
+            return;
+        }
+
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
 
@@ -71,5 +94,85 @@ public class PlayerController : MonoBehaviour
     {
         float animatorSpeed = Mathf.Clamp01(currentSpeed / runSpeed);
         anim.SetFloat("speed", animatorSpeed);
+        anim.SetBool("isGrounded", isGrounded);
+        
+        bool isFalling = !isGrounded && velocity.y < -0.1f;
+        anim.SetBool("isFalling", isFalling);
+        anim.SetBool("isLanding", isLanding);
+    }
+
+    void CheckGrounded()
+    {
+        wasGrounded = isGrounded;
+        isGrounded = controller.isGrounded;
+
+        if (!isGrounded && wasGrounded)
+        {
+            Debug.Log("떨어지기 시작");
+        }
+        if (isGrounded && velocity.y < 0)
+        {
+            velocity.y = -2.0f;
+
+            if (!wasGrounded && anim != null)
+            {
+                isLanding = true;
+                landingTimer = landingDuration;
+            }
+        }
+    }
+
+    void HandleJump()
+    {
+        if (Input.GetButtonDown("Jump") && isGrounded)
+        {
+            velocity.y = Mathf.Sqrt(jumpHight * -2f * gravity);
+            if (anim != null)
+            {
+                anim.SetTrigger("jumpTrigger");
+            }
+        }
+
+
+        if (!isGrounded)
+        {
+            velocity.y += gravity * Time.deltaTime;
+        }
+
+        controller.Move(velocity * Time.deltaTime);
+    }
+
+    void HendleLanding()
+    {
+        if (isLanding)
+        {
+            landingTimer -= Time.deltaTime;
+            if (landingTimer <= 0)
+            {
+                isLanding = false;
+            }
+        }
+    }
+
+    void HendleAttack()
+    {
+        if (isAttacking)
+        {
+            attackTimer -= Time.deltaTime;
+            if (attackTimer <= 0)
+            {
+                isAttacking = false;
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha1) && !isAttacking)
+        {
+            isAttacking = true;
+            attackTimer = attackDuration;
+            if (anim != null)
+            {
+                anim.SetTrigger("attackTrigger");
+            }
+        }
     }
 }
