@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75b62d786e31b45479919126a576969d, type: 3}
+  m_Name: Achievement_coin_2
+  m_EditorClassIdentifier: 
+  achievementName: "2 \uCF54\uC778"
+  description: "\uCF54\uC778\uC744 2\uAC1C \uD76D\uB4DD\uD558\uAE30"
+  achievementType: 0
+  requiredAmount: 2
+  rewardCoins: 0
+  isUnlocked: 0
+  icon: {fileID: 21300000, guid: 972c46ab5fd81b14391798dcb5ebf9e9, type: 3}

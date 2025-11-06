@@ -22,6 +22,9 @@ public class CoinItem : InteractableObject
         {
             QuestManager.Instance.AddIndteractProgress(questTag);
         }
+
+        AchievementManager.instance?.UpdateProgress(AchievementType.CollectCoins, coinValue);
+        
         Destroy(gameObject);
     }
 }

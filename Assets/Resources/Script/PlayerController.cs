@@ -118,7 +118,7 @@ public class PlayerController : MonoBehaviour
 
         if (!isGrounded && wasGrounded)
         {
-            Debug.Log("떨어지기 시작");
+            // Debug.Log("떨어지기 시작");
         }
         if (isGrounded && velocity.y < 0)
         {
